@@ -1,14 +1,13 @@
 <template>
-  <div id="app">
-    <router-view/>
-  </div>
+  <div class="course">课程管理</div>
 </template>
 
 <script lang="ts">
 import Vue from 'vue'
+
 export default Vue.extend({
-  name: 'App'
+  name: 'CourseIndex'
 })
 </script>
 
-<style lang="scss" scope></style>
+<style lang="scss" scoped></style>
