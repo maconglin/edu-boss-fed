@@ -8,6 +8,7 @@
       text-color="#fff"
       active-text-color="#ffd04b"
       router
+      collapse
     >
       <el-submenu index="1">
         <template slot="title">
@@ -27,7 +28,7 @@
           <span slot="title">资源管理</span>
         </el-menu-item>
       </el-submenu>
-      <el-menu-item index="/course">
+      <el-menu-item index="/">
         <i class="el-icon-menu"></i>
         <span slot="title">课程管理</span>
       </el-menu-item>
@@ -72,8 +73,11 @@ export default Vue.extend({
 
 <style lang="scss" scoped>
 .aside {
+  height: 100%;
   .el-menu {
-    min-height: 100vh;
+    width: auto;
+    // min-height: 100vh;
+    height: 100%;
   }
 }
 </style>

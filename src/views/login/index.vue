@@ -1,22 +1,34 @@
 <template>
   <div class="login">
-  <div style="margin: 20px"></div>
-  <el-form
-    class="login-form"
-    label-position="top"
-    label-width="80px"
-    ref="form"
-    :model="form"
-    :rules="rules"
-  >
-    <el-form-item label="手机号" prop="phone">
-      <el-input v-model="form.phone" placeholder="请输入手机号"></el-input>
-    </el-form-item>
-    <el-form-item label="密码"  prop="password" >
-      <el-input v-model="form.password" show-password  type="password" placeholder="请输入密码"></el-input>
-    </el-form-item>
-    <el-button type="primary" class="login-btn" :loading="isLogInLoarding" @click="onSubmit('form')">登录</el-button>
-  </el-form>
+    <!--
+      1. :model="ruleForm"
+      2. :rules="rules"
+      3. ref="ruleForm"
+      4. el-form-item 绑定 prop 属性
+     -->
+    <el-form
+      class="login-form"
+      label-position="top"
+      ref="form"
+      :model="form"
+      :rules="rules"
+      label-width="80px"
+    >
+      <el-form-item label="手机号" prop="phone">
+        <el-input v-model="form.phone"></el-input>
+      </el-form-item>
+      <el-form-item label="密码" prop="password">
+        <el-input type="password" v-model="form.password"></el-input>
+      </el-form-item>
+      <el-form-item>
+        <el-button
+          class="login-btn"
+          type="primary"
+          :loading="isLoginLoading"
+          @click="onSubmit"
+        >登录</el-button>
+      </el-form-item>
+    </el-form>
   </div>
 </template>
 
@@ -24,6 +36,7 @@
 import Vue from 'vue'
 import { Form } from 'element-ui'
 import { login } from '@/services/user'
+
 export default Vue.extend({
   name: 'LoginIndex',
   data () {
@@ -39,40 +52,52 @@ export default Vue.extend({
         ],
         password: [
           { required: true, message: '请输入密码', trigger: 'blur' },
-          { min: 6, max: 18, message: '长度在6 到 18 个字符', trigger: 'blur' }
+          { min: 6, max: 18, message: '长度在 6 到 18 个字符', trigger: 'blur' }
         ]
       },
-      isLogInLoarding: false
+      isLoginLoading: false
     }
   },
+
   methods: {
     async onSubmit () {
       try {
-        // 表单验证
+        // 1. 表单验证
         await (this.$refs.form as Form).validate()
-        // 登录展示loading
-        this.isLogInLoarding = true
-        // 2验证通过 -> 提交表单
+
+        // 登录按钮 loading
+        this.isLoginLoading = true
+
+        // 2. 验证通过 -> 提交表单
         const { data } = await login(this.form)
-        // 3处理请求链接
-        //   失败给出提示
+        // const { data } = await request({
+        //   method: 'POST',
+        //   url: '/front/user/login',
+        //   headers: { 'content-type': 'application/x-www-form-urlencoded' },
+        //   data: qs.stringify(this.form) // axios 默认发送的是 application/json 格式的数据
+        // })
+
+        // 3. 处理请求结果
+        //    失败：给出提示
         if (data.state !== 1) {
           this.$message.error(data.message)
         } else {
-          // 登录成功,记录登录状态存到vuex容器中全局访问
+          // 1. 登录成功，记录登录状态，状态需要能够全局访问（放到 Vuex 容器中）
           this.$store.commit('setUser', data.content)
-          // 4成功跳转首页
-          this.$router.push(this.$route.query.path as string || '/')
+          // 2. 然后在访问需要登录的页面的时候判断有没有登录状态（路由拦截器）
+          //    成功：跳转回原来页面或首页
+          this.$router.push(this.$route.query.redirect as string || '/')
           // this.$router.push({
           //   name: 'home'
           // })
           this.$message.success('登录成功')
         }
-      } catch (error) {
-        console.log('登录失败' + error)
+      } catch (err) {
+        console.log('登录失败', err)
       }
-      // 结束登录按钮loading
-      this.isLogInLoarding = false
+
+      // 结束登录按钮的 loading
+      this.isLoginLoading = false
     }
   }
 })
