@@ -110,9 +110,20 @@ const routes: Array<RouteConfig> = [
         component: () => import(/* webpackChunkName: 'menu-create-edit' */ '@/views/advert/create.vue')
       },
       {
-        path: '/advert/:id/edit',
+        path: '/advert/:advertId/edit',
         name: 'advert-edit',
-        component: () => import(/* webpackChunkName: 'menu-create-edit' */ '@/views/advert/edit.vue')
+        component: () => import(/* webpackChunkName: 'menu-create-edit' */ '@/views/advert/edit.vue'),
+        props: true
+      },
+      {
+        path: '/advert-space',
+        name: 'advert-space',
+        component: () => import(/* webpackChunkName: 'course-create' */ '@/views/advert-space/index.vue')
+      },
+      {
+        path: '/advert-space-edit',
+        name: 'advert-space-edit',
+        component: () => import(/* webpackChunkName: 'course-create' */ '@/views/advert-space/edit.vue')
       }
     ]
   },

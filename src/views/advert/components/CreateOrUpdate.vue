@@ -1,44 +1,53 @@
 <template>
   <div class="adverCreate">
     <el-card>
-      <el-form ref="form" :model="form" label-width="80px">
-      <el-form-item label="广告名称">
-        <el-input v-model="form.name"></el-input>
+      <el-form ref="form" :model="promotionAdDTO" label-width="90px">
+      <el-form-item label="广告名称" required>
+        <el-input v-model="promotionAdDTO.name"></el-input>
       </el-form-item>
       <el-form-item label="广告位置">
-        <el-select v-model="form.region" placeholder="请选择活动区域">
-          <el-option label="区域一" value="shanghai"></el-option>
-          <el-option label="区域二" value="beijing"></el-option>
+        <el-select v-model="promotionAdDTO.spaceId" placeholder="请选择">
+          <el-option
+            v-for="item in roles"
+            :key="item.id"
+            :label="item.name"
+            :value="item.id"
+          ></el-option>
         </el-select>
       </el-form-item>
-      <el-form-item label="活动时间">
-        <el-col :span="11">
-          <el-date-picker type="date" placeholder="选择日期" v-model="form.date1" style="width: 100%;"></el-date-picker>
-        </el-col>
-        <el-col class="line" :span="2">-</el-col>
-        <el-col :span="11">
-          <el-time-picker placeholder="选择时间" v-model="form.date2" style="width: 100%;"></el-time-picker>
-        </el-col>
+      <el-form-item label="开始时间" required>
+        <el-date-picker
+          v-model="promotionAdDTO.startTime"
+          type="date"
+          placeholder="选择日期时间"
+          value-format="yyyy-MM-dd"
+        />
       </el-form-item>
-      <el-form-item label="即时配送">
-        <el-switch v-model="form.delivery"></el-switch>
+      <el-form-item label="结束时间" required>
+        <el-date-picker
+          v-model="promotionAdDTO.endTime"
+          type="date"
+          placeholder="选择日期时间"
+          value-format="yyyy-MM-dd"
+        />
       </el-form-item>
-      <el-form-item label="活动性质">
-        <el-checkbox-group v-model="form.type">
-          <el-checkbox label="美食/餐厅线上活动" name="type"></el-checkbox>
-          <el-checkbox label="地推活动" name="type"></el-checkbox>
-          <el-checkbox label="线下主题活动" name="type"></el-checkbox>
-          <el-checkbox label="单纯品牌曝光" name="type"></el-checkbox>
-        </el-checkbox-group>
-      </el-form-item>
-      <el-form-item label="特殊资源">
-        <el-radio-group v-model="form.resource">
-          <el-radio label="线上品牌商赞助"></el-radio>
-          <el-radio label="线下场地免费"></el-radio>
+      <el-form-item label="上线/下线" required>
+        <el-radio-group v-model="promotionAdDTO.status">
+          <el-radio label="上线" value="1"></el-radio>
+          <el-radio label="下线" value="0"></el-radio>
         </el-radio-group>
       </el-form-item>
-      <el-form-item label="活动形式">
-        <el-input type="textarea" v-model="form.desc"></el-input>
+      <el-form-item label="广告图片" >
+          <course-image
+            v-model="promotionAdDTO.img"
+            :limit="5"
+          />
+      </el-form-item>
+      <el-form-item label="广告链接" required>
+        <el-input v-model="promotionAdDTO.link"></el-input>
+      </el-form-item>
+      <el-form-item label="广告备注">
+        <el-input type="textarea" v-model="promotionAdDTO.text"></el-input>
       </el-form-item>
       <el-form-item>
         <el-button type="primary" @click="onSubmit">立即创建</el-button>
@@ -51,20 +60,63 @@
 
 <script lang="ts">
 import Vue from 'vue'
+import CourseImage from '@/views/course/components/CourseImage.vue'
+import { saveOrUpdates, getAllSpaces, getAdById } from '@/services/adver'
 export default Vue.extend({
   name: 'CreateOrUpdate',
+  props: {
+    isEdit: {
+      type: Boolean,
+      default: false
+    },
+    advertId: {
+      type: [String, Number]
+    }
+  },
+  components: {
+    CourseImage
+  },
   data () {
     return {
-      form: {
+      promotionAdDTO: {
+        id: '',
         name: '',
-        region: '',
-        date1: '',
-        date2: '',
-        delivery: false,
-        type: [],
-        resource: '',
-        desc: ''
-      }
+        spaceId: '',
+        keyword: '',
+        htmlContent: '',
+        text: '',
+        img: '',
+        link: '',
+        startTime: '',
+        endTime: '',
+        createTime: '',
+        updateTime: '',
+        status: 1,
+        priority: 0,
+        startTimeFormatString: '',
+        endTimeFormatString: ''
+      },
+      roles: []
+    }
+  },
+  methods: {
+    async onSubmit () {
+      const { data } = await saveOrUpdates(this.promotionAdDTO)
+      console.log('data: ', data)
+    },
+    async getAllSpaces () {
+      const { data } = await getAllSpaces()
+      this.roles = data.content
+    },
+    async loadAdver () {
+      const { data } = await getAdById(this.advertId)
+      this.promotionAdDTO = data.data
+    }
+  },
+  created () {
+    this.getAllSpaces()
+    if (this.isEdit) {
+      this.loadAdver()
     }
   }
 })

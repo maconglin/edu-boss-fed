@@ -79,8 +79,10 @@
             width="100px"
             align="center"
             >
-            <template>
-              <el-button  type="text">编辑</el-button>
+            <template slot-scope="scope">
+              <el-button  type="text"
+              @click="handleClick(scope)"
+              >编辑</el-button>
             </template>
           </el-table-column>
         </el-table>
@@ -97,7 +99,7 @@ export default Vue.extend({
   data () {
     return {
       adverForm: {
-        id: '',
+        id: 0,
         name: '',
         spaceId: 0,
         keyword: '',
@@ -151,6 +153,14 @@ export default Vue.extend({
           message: '已取消'
         })
         this.getAdverList()
+      })
+    },
+    handleClick (scope: any) {
+      this.$router.push({
+        name: 'advert-edit',
+        params: {
+          advertId: scope.row.id
+        }
       })
     }
   }

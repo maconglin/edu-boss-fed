@@ -25,3 +25,33 @@ export const updateStatus = (params: any) => {
     params
   })
 }
+export const saveOrUpdates = (params: any) => {
+  return request({
+    method: 'POST',
+    url: '/front/ad/saveOrUpdate',
+    params
+  })
+}
+
+export const getAdById = (params: any) => {
+  return request({
+    method: 'GET',
+    url: '/front/ad/getAdById',
+    params
+  })
+}
+export const spaceSaveOrUpdate = (params: any) => {
+  return request({
+    method: 'POST',
+    url: '/front/ad/space/saveOrUpdate',
+    params
+  })
+}
+
+export const getSpaceById = (params: any) => {
+  return request({
+    method: 'GET',
+    url: '/front/ad/space/getSpaceById',
+    params
+  })
+}
